@@ -1,0 +1,11 @@
+{
+  "name": "upflow-be",
+  "version": "1.0.0",
+  "description": "project management application",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tanmoy bhowmick",
+  "license": "ISC"
+}
