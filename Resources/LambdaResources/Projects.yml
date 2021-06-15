@@ -1,0 +1,135 @@
+handler: Projects/index.main
+package:
+  individually: true
+  artifact: "./dist/Projects.zip"
+environment:
+  USER_POOL_ID:
+    Ref: CognitoUserPool  
+name: Projects-${self:provider.stage}
+events:
+  - http:
+      path: /project
+      method: POST
+      cors: true
+      integration: lambda
+      authorizer:
+        name: cognitoAuthorizer
+        type: COGNITO_USER_POOLS
+        arn:
+          Fn::GetAtt:
+            - CognitoUserPool
+            - Arn      
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "create",
+            "userId": "$context.authorizer.claims.sub",
+            "details": $input.json("$")
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}
+  - http:
+      path: /project
+      method: PUT
+      cors: true
+      integration: lambda
+      authorizer:
+        name: cognitoAuthorizer
+        type: COGNITO_USER_POOLS
+        arn:
+          Fn::GetAtt:
+            - CognitoUserPool
+            - Arn      
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "update",
+            "userId": "$context.authorizer.claims.sub",
+            "details": $input.json("$")
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}
+  - http:
+      path: /project/get
+      method: POST
+      cors: true
+      integration: lambda
+      authorizer:
+        name: cognitoAuthorizer
+        type: COGNITO_USER_POOLS
+        arn:
+          Fn::GetAtt:
+            - CognitoUserPool
+            - Arn      
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "get",
+            "userId": "$context.authorizer.claims.sub",
+            "details": $input.json("$")
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}
+  - http:
+      path: /project/join
+      method: POST
+      cors: true
+      integration: lambda
+      authorizer:
+        name: cognitoAuthorizer
+        type: COGNITO_USER_POOLS
+        arn:
+          Fn::GetAtt:
+            - CognitoUserPool
+            - Arn      
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "joinProject",
+            "userId": "$context.authorizer.claims.sub",
+            "details": $input.json("$")
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}
+  - http:
+      path: /project
+      method: DELETE
+      cors: true
+      integration: lambda
+      authorizer:
+        name: cognitoAuthorizer
+        type: COGNITO_USER_POOLS
+        arn:
+          Fn::GetAtt:
+            - CognitoUserPool
+            - Arn      
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "delete",
+            "userId": "$context.authorizer.claims.sub",
+            "details": $input.json("$")
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}
+  - http:
+      path: /project/remove-member
+      method: POST
+      cors: true
+      integration: lambda
+      authorizer:
+        name: cognitoAuthorizer
+        type: COGNITO_USER_POOLS
+        arn:
+          Fn::GetAtt:
+            - CognitoUserPool
+            - Arn      
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "removeMember",
+            "userId": "$context.authorizer.claims.sub",
+            "details": $input.json("$")
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}

@@ -1,0 +1,19 @@
+Type: AWS::DynamoDB::Table
+Properties:
+  TableName: ProjectsTable
+  AttributeDefinitions:
+    - AttributeName: projectId
+      AttributeType: S
+    - AttributeName: joinId
+      AttributeType: S
+  KeySchema:
+    - AttributeName: projectId 
+      KeyType: HASH
+  GlobalSecondaryIndexes:
+    - IndexName: "byJoinId"
+      KeySchema:
+        - AttributeName: joinId
+          KeyType: HASH
+      Projection:
+        ProjectionType: ALL      
+  BillingMode: PAY_PER_REQUEST    

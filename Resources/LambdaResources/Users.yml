@@ -1,0 +1,19 @@
+handler: Users/index.main
+package:
+  individually: true
+  artifact: "./dist/Users.zip"
+name: Users-${self:provider.stage}
+events:
+  - http:
+      path: /user/{email_id}
+      method: GET
+      cors: true
+      integration: lambda
+      request:
+        passThrough: WHEN_NO_MATCH
+        template:
+          application/json: '{
+            "action": "getUser",
+            "email": "$input.params(''email_id'')"
+            }'
+      response: ${file(./Resources/LambdaResponses.yml)}
