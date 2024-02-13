@@ -1,12 +1,12 @@
 CallbackURLs:
-  dev: "http://localhost:3000/"
-  prod: "https://upflow.devrook.com/"
+  dev: "https://upflow.gm1957.site"
+  prod: "https://upflow.gm1957.site"
 LogoutURLs:
-  dev: "http://localhost:3000/"
-  prod: "https://upflow.devrook.com/"
+  dev: "https://upflow.gm1957.site"
+  prod: "https://upflow.gm1957.site"
 DefaultRedirectURI:
-  dev: "http://localhost:3000/"
-  prod: "https://upflow.devrook.com/"
+  dev: "https://upflow.gm1957.site"
+  prod: "https://upflow.gm1957.site"
 EMAILING_REGION:
   dev: "us-west-1"
   prod: "ap-east-1"
