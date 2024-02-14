@@ -4,7 +4,7 @@ const {
   deleteItem,
   queryItem,
   queryItemPaginated,
-  batchGetItem,
+  batchGetItem
 } = require("../Utils/DBClient");
 
 const {
@@ -13,7 +13,7 @@ const {
   okResponse,
   deleteResponse,
   internalServerError,
-  badRequestResponse,
+  badRequestResponse
 } = require("../Utils/responseCodes").responseMessages;
 
 const { customValidator } = require("../Utils/customValidator");
@@ -26,14 +26,14 @@ function deleteCognitoUser(userId) {
   return cognitoIdentityService
     .adminDeleteUser({
       UserPoolId: USER_POOL_ID,
-      Username: userId,
+      Username: userId
     })
     .promise()
-    .then((result) => {
+    .then(result => {
       console.log("result", result);
       return okResponse("user deleted successfully from the cognito", result);
     })
-    .catch((err) => {
+    .catch(err => {
       console.log("error", err);
       return badRequestResponse("unable to delete cognito user", err);
     });
@@ -57,15 +57,15 @@ function createUser(event) {
       email,
       profilePicture: "",
       projectIds: [],
-      createdAt: new Date(Date.now()).toISOString(),
-    },
+      createdAt: new Date(Date.now()).toISOString()
+    }
   };
 
   return putItem(params)
     .then(() =>
       okResponse(`user created successfully with the email id : ${email}`)
     )
-    .catch((err) => internalServerError(err));
+    .catch(err => internalServerError(err));
 }
 
 function getUser(event) {
@@ -83,13 +83,13 @@ function getUser(event) {
     IndexName: "byEmailId",
     KeyConditionExpression: "email = :email",
     ExpressionAttributeValues: {
-      ":email": email,
-    },
+      ":email": email
+    }
   };
 
   return queryItem(params)
-    .then((result) => okResponse("fetched user", result))
-    .catch((err) => internalServerError(err));
+    .then(result => okResponse("fetched user", result))
+    .catch(err => internalServerError(err));
 }
 
 function getUserByUserId(event) {
@@ -106,13 +106,13 @@ function getUserByUserId(event) {
     TableName: "UsersTable",
     KeyConditionExpression: "userId = :userId",
     ExpressionAttributeValues: {
-      ":userId": userId,
-    },
+      ":userId": userId
+    }
   };
 
   return queryItem(params)
-    .then((result) => okResponse("fetched result", result))
-    .catch((err) => internalServerError(err));
+    .then(result => okResponse("fetched result", result))
+    .catch(err => internalServerError(err));
 }
 
 async function updateUser(event) {
@@ -142,20 +142,26 @@ async function updateUser(event) {
   const params = {
     TableName: "UsersTable",
     Key: {
-      userId,
+      userId
     },
     UpdateExpression: updateExpression,
     ExpressionAttributeNames: ExpressionAttributeNames,
-    ExpressionAttributeValues: ExpressionAttributeValues,
+    ExpressionAttributeValues: ExpressionAttributeValues
   };
 
   return updateItem(params)
     .then(async () => {
       return updateResponse(`user updated successfully with userId ${userId}`);
     })
-    .catch((err) => internalServerError(err, `Error to update the user`));
+    .catch(err => internalServerError(err, `Error to update the user`));
 }
 
 function deleteUser(event) {}
 
-module.exports = { createUser, updateUser, deleteUser, getUser, getUserByUserId };
+module.exports = {
+  createUser,
+  updateUser,
+  deleteUser,
+  getUser,
+  getUserByUserId
+};

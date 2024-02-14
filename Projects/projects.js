@@ -4,7 +4,7 @@ const {
   deleteItem,
   queryItem,
   queryItemPaginated,
-  batchGetItem,
+  batchGetItem
 } = require("../Utils/DBClient");
 
 const {
@@ -13,7 +13,7 @@ const {
   okResponse,
   deleteResponse,
   internalServerError,
-  badRequestResponse,
+  badRequestResponse
 } = require("../Utils/responseCodes").responseMessages;
 
 const { getUserByUserId, updateUser } = require("../Users/users");
@@ -58,14 +58,14 @@ async function createProject(event) {
       projectName,
       projectDescription: projectDescription ? projectDescription : "",
       projectPicture: projectPicture ? projectPicture : "",
-      kanbanDetails: {},
-    },
+      kanbanDetails: {}
+    }
   };
 
   const projectObj = {
     projectId,
     projectPicture: projectPicture ? projectPicture : "",
-    projectName,
+    projectName
   };
   const newProjectIds = [...oldProjectIds, projectObj];
 
@@ -73,7 +73,7 @@ async function createProject(event) {
   promises.push(putItem(params));
   return Promise.all(promises)
     .then(() => okResponse("project created successfuly", projectObj))
-    .catch((err) => internalServerError(err));
+    .catch(err => internalServerError(err));
 }
 
 function adminUpdateProject(event) {
@@ -98,11 +98,11 @@ function adminUpdateProject(event) {
   const params = {
     TableName: "ProjectsTable",
     Key: {
-      projectId,
+      projectId
     },
     UpdateExpression: updateExpression,
     ExpressionAttributeNames: ExpressionAttributeNames,
-    ExpressionAttributeValues: ExpressionAttributeValues,
+    ExpressionAttributeValues: ExpressionAttributeValues
   };
 
   return updateItem(params)
@@ -111,7 +111,7 @@ function adminUpdateProject(event) {
         `project updated successfully of the project-id:  ${projectId}`
       )
     )
-    .catch((err) =>
+    .catch(err =>
       internalServerError(
         err,
         `unable to update the project with project-id : ${projectId}`
@@ -130,7 +130,7 @@ function updateProject(event) {
   const { userId, projectId } = event;
 
   return getProject(event)
-    .then((projectDetails) => {
+    .then(projectDetails => {
       if (!Object.keys(projectDetails.data).length)
         return badRequestResponse(
           "sorry you are nither an admin nor a team member"
@@ -139,9 +139,7 @@ function updateProject(event) {
       delete event.userId;
       delete event.projectId;
       // if not te member then get project function will throw error
-      const adminIdsArr = projectDetails.data.adminIds.map(
-        (item) => item.userId
-      );
+      const adminIdsArr = projectDetails.data.adminIds.map(item => item.userId);
       if (adminIdsArr.includes(userId))
         return adminUpdateProject({ ...event, projectId });
 
@@ -156,7 +154,7 @@ function updateProject(event) {
       return adminUpdateProject({ ...event, projectId });
     })
 
-    .catch((err) =>
+    .catch(err =>
       internalServerError(
         err,
         `unable to update the project with project-id : ${projectId}`
@@ -177,18 +175,18 @@ function getProject(event) {
   const params = {
     RequestItems: {
       ProjectsTable: {
-        Keys: [{ projectId }],
-      },
-    },
+        Keys: [{ projectId }]
+      }
+    }
   };
 
   return batchGetItem(params)
-    .then((result) => {
+    .then(result => {
       const projectDetails = result.Responses.ProjectsTable;
       if (!projectDetails.length) return badRequestResponse("no project found");
 
       const teamMembers = projectDetails[0].teamMemberIds.map(
-        (item) => item.userId
+        item => item.userId
       );
 
       if (!teamMembers.includes(userId))
@@ -198,7 +196,7 @@ function getProject(event) {
 
       return okResponse("fetched details", projectDetails[0]);
     })
-    .catch((err) => internalServerError(err));
+    .catch(err => internalServerError(err));
 }
 
 function joinProject(event) {
@@ -212,7 +210,7 @@ function joinProject(event) {
   if (joinId.length < 8)
     return badRequestResponse("joinId length should be = 8");
 
-  return getUserByUserId({ userId }).then((result) => {
+  return getUserByUserId({ userId }).then(result => {
     const user = result.data[0];
 
     const userWithoutProjectIds = { ...user };
@@ -223,11 +221,11 @@ function joinProject(event) {
       IndexName: "byJoinId",
       KeyConditionExpression: "joinId = :joinId",
       ExpressionAttributeValues: {
-        ":joinId": joinId,
-      },
+        ":joinId": joinId
+      }
     };
 
-    return queryItem(params).then((queryResult) => {
+    return queryItem(params).then(queryResult => {
       if (!queryResult.length)
         return badRequestResponse(`join id not found : ${joinId}`);
       const { projectId, projectPicture, projectName } = queryResult[0];
@@ -235,7 +233,7 @@ function joinProject(event) {
       const projectObj = {
         projectId,
         projectPicture,
-        projectName,
+        projectName
       };
 
       const promises = [
@@ -243,17 +241,17 @@ function joinProject(event) {
           projectId,
           teamMemberIds: [
             ...queryResult[0].teamMemberIds,
-            { ...userWithoutProjectIds },
-          ],
+            { ...userWithoutProjectIds }
+          ]
         }),
-        updateUser({ userId, projectIds: [projectObj, ...user.projectIds] }),
+        updateUser({ userId, projectIds: [projectObj, ...user.projectIds] })
       ];
 
       return Promise.all(promises)
         .then(() =>
           okResponse("joined the project successfully", queryResult[0])
         )
-        .catch((err) => internalServerError(err));
+        .catch(err => internalServerError(err));
     });
   });
 }
@@ -265,7 +263,7 @@ function removeMember(event) {
     "userId",
     "projectId",
     "newTeamMemberIds",
-    "removedUserId",
+    "removedUserId"
   ]);
 
   if (errors.length)
@@ -274,21 +272,23 @@ function removeMember(event) {
   const { userId, projectId, newTeamMemberIds, removedUserId } = event;
 
   return updateProject({ userId, projectId, teamMemberIds: newTeamMemberIds })
-    .then(async (response) => {
+    .then(async response => {
       if (response.status) {
         const user = await getUserByUserId({ userId: removedUserId });
         const newUserProjectIds = [];
-        user.data[0].projectIds.forEach((item) => {
+        user.data[0].projectIds.forEach(item => {
           if (!item.projectId === projectId) newUserProjectIds.push(item);
         });
         return updateUser({
           userId: removedUserId,
-          projectIds: newUserProjectIds,
-        }).then(() => okResponse("member deleted from the project successfully"));
+          projectIds: newUserProjectIds
+        }).then(() =>
+          okResponse("member deleted from the project successfully")
+        );
       }
       return badRequestResponse("sorry you are not an admin of this project");
     })
-    .catch((err) => internalServerError(err));
+    .catch(err => internalServerError(err));
 }
 
 function deleteProject(event) {}
@@ -299,5 +299,5 @@ module.exports = {
   updateProject,
   deleteProject,
   joinProject,
-  removeMember,
+  removeMember
 };

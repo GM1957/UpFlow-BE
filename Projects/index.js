@@ -4,14 +4,14 @@ const {
   updateProject,
   joinProject,
   deleteProject,
-  removeMember,
+  removeMember
 } = require("./projects");
 
 const {
-  badRequestResponse,
+  badRequestResponse
 } = require("../Utils/responseCodes").responseMessages;
 
-exports.main = async (event) => {
+exports.main = async event => {
   console.log("Input to the Projects lambda", event);
 
   const { action, details } = event;
@@ -22,7 +22,7 @@ exports.main = async (event) => {
 
     event = {
       ...event,
-      ...details,
+      ...details
     };
 
     delete event.details;
