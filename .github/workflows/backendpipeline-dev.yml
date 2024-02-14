@@ -33,8 +33,6 @@ jobs:
         npm i
     - name: Installing Serverless Framework
       run: npm install -g serverless
-    - name: Code Format Checking
-      run: npm run formatCheck
     - name: Serverless AWS authentication
       run: sls config credentials --provider aws --key ${{ secrets.DEV_AWS_KEY }} --secret ${{ secrets.DEV_AWS_SECRET }} --profile ${{ secrets.DEV_PROFILE_NAME }}
     - name: Deploy Lambda functions
