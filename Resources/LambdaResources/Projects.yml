@@ -6,6 +6,7 @@ environment:
   USER_POOL_ID:
     Ref: CognitoUserPool  
 name: Projects-${self:provider.stage}
+runtime: nodejs18.x
 events:
   - http:
       path: /project

@@ -6,6 +6,7 @@ environment:
   USER_POOL_ID:
     Ref: CognitoUserPool
 name: S3upload-${self:provider.stage}
+runtime: nodejs18.x
 events:
   - http:
       path: /s3upload/get-signed-url

@@ -3,14 +3,14 @@ frameworkVersion: '2'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   lambdaHashingVersion: 20201221
   region: ${opt:region, 'us-west-1'}
   stage: ${opt:stage, 'dev'}
   environment:
     REGION: ${self:provider.region}
     SERVICE_NAME: "${self:service}-${self:provider.stage}"
-    STAGE: "${self:provider.stage, dev}"
+    STAGE: "${self:provider.stage, 'dev'}"
     COGNITO_USER_POOL_CLIENT: 
       Ref: CognitoUserPoolClient
     KEYS_URL: !Join ['', ['https://cognito-idp.', '${opt:region, self:provider.region}', '.amazonaws.com/', !Ref CognitoUserPool, '/.well-known/jwks.json']]
@@ -26,7 +26,7 @@ provider:
             ],
           ],
       }
-    REDIRECT_URL_AFTER_AUTHENTICATION: ${self:custom.REDIRECT_URL_AFTER_AUTHENTICATION.${opt:stage, dev}}
+    REDIRECT_URL_AFTER_AUTHENTICATION: ${self:custom.REDIRECT_URL_AFTER_AUTHENTICATION.${opt:stage, 'dev'}}
     s3MainBucket: ${self:custom.s3MainBucket}
   iamRoleStatements: ${file(./Resources/LambdaRole.yml)}
 
@@ -40,8 +40,8 @@ custom:
   userPoolName: "${self:service}-${self:provider.stage}"
   userPoolClientName: "${self:service}-user-pool-client-${self:provider.stage}"  
   REDIRECT_URL_AFTER_AUTHENTICATION:
-    dev: "http://localhost:3000/"
-    prod: "https://upflow.devrook.com/"
+    dev: "https://upflow.gm1957.site"
+    prod: "https://upflow.gm1957.site"
 
   s3MainBucket: "${self:provider.stage}-${self:service}-main-bucket"
 
